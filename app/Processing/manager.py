@@ -1,5 +1,5 @@
 from app.es.es_connection import ESConnection
-from a import TextFeatures
+from processer import TextFeatures
 from elasticsearch.helpers import bulk
 
 class ESUpdater:
@@ -73,9 +73,25 @@ class ESUpdater:
 
         print("Sentiment updated")
 
+    def delete(self):
 
-if __name__ == "__main__":
-    index_name = "fake_tweets"
-    updater = ESUpdater(index_name)
-    updater.update_weapons()
-    updater.update_sentiment()
+        query = {
+            "query": {
+                "bool": {
+                    "must_not": [
+                        {"term": {"Antisemitic": 1}}
+                    ],
+                    "filter": [
+                        {"script": {
+                            "script": "ctx._source.weapons_found == null || ctx._source.weapons_found.size() == 0"}},
+                        {"terms": {"sentiment.keyword": ["neutral", "positive"]}}
+                    ]
+                }
+            }
+        }
+
+        self.es.delete_by_query(index=self.index_name, body=query)
+        print("Non-relevant documents deleted")
+
+
+

@@ -39,3 +39,5 @@ class TextFeatures:
                     break
                 weapons.append(line)
         self.weapons = weapons
+
+
