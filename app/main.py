@@ -1,5 +1,6 @@
 from app.es.data_loader import Loader
 from app.Processing.manager import ESUpdater
+from app.api.endpoints import run
 
 def main():
     loader = Loader()
@@ -10,3 +11,5 @@ def main():
     updater.update_weapons()
     updater.update_sentiment()
     updater.delete()
+
+    run()
